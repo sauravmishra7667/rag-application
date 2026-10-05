@@ -1,0 +1,30 @@
+# cp .env.example .env    # then set GEMINI_API_KEY
+# docker compose up --build
+# Open http://localhost:3000
+
+name: rag-app
+
+services:
+  api:
+    build: ./backend
+    env_file: .env
+    environment:
+      DATA_DIR: /data
+      CORS_ORIGINS: http://localhost:3000
+    volumes:
+      - data:/data
+    ports:
+      - "8000:8000"
+
+  web:
+    build:
+      context: ./frontend
+      args:
+        NEXT_PUBLIC_API_URL: http://localhost:8000
+    depends_on:
+      - api
+    ports:
+      - "3000:3000"
+
+volumes:
+  data:
